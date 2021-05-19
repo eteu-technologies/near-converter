@@ -1,28 +1,27 @@
 <template>
-    <div id="app">
-        <img alt="Vue logo" src="./assets/logo.png" />
-        <HelloWorld msg="Welcome to Your Vue.js App" />
-    </div>
+    <b-container>
+        <b-row>
+            <div class="vh-100 vw-100 col d-flex align-items-center justify-content-center">
+                <converter></converter>
+            </div>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue';
+import Converter from '@/components/Converter';
 
 export default {
     name: 'App',
     components: {
-        HelloWorld,
+        Converter
     },
+    data: () => {
+        return {};
+    }
 };
 </script>
 
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+
 </style>
