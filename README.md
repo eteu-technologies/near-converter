@@ -1,4 +1,4 @@
-# near-calculator
+# near-converter
 
 ## Project setup
 ```
