@@ -63,7 +63,11 @@ export default Vue.extend({
     },
     watch: {
         'values.from': function(newVal) {
-            this.values.raw.from = parseFloat(newVal);
+            if (this.selection.from === this.selection.to) {
+                this.values.to = this.values.raw.from = this.values.raw.to = newVal;
+                return;
+            }
+            this.values.raw.from = parseFloat(newVal) || 0.0;
 
             // Convert from value to NEAR
             const [converted, precision] = convertNear({
@@ -77,8 +81,7 @@ export default Vue.extend({
             // do not look at this code pls
             const hasDecimal = (converted % 1) !== 0;
             if (hasDecimal) {
-                const fractionDigits = newVal.indexOf('.') !== -1 ? newVal.split('.', 2)[1].length : precision;
-                this.values.to = converted.toFixed(Math.max(fractionDigits, precision));
+                this.values.to = converted.toFixed(precision);
             } else {
                 this.values.to = BigInt(converted).toString();
             }
