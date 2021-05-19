@@ -75,7 +75,7 @@ export default Vue.extend({
             this.values.raw.to = converted;
 
             // do not look at this code pls
-            const fixed = converted.toFixed(precision);
+            const fixed = converted['toFixed'] ? converted.toFixed(precision) : `${converted}`;
             const [firstHalf, secondHalf] = fixed.split('.', 2);
             if (firstHalf.includes('e')) {
                 this.values.to = converted.toLocaleString('fullwide', { useGrouping: false });
@@ -86,7 +86,7 @@ export default Vue.extend({
             }
         },
         'values.to': function(newVal, oldVal) {
-            console.log('changed to', newVal, oldVal);
+            console.debug('changed from %s to %s', oldVal, newVal);
         }
     },
     created() {
