@@ -63,11 +63,11 @@ export default Vue.extend({
     },
     watch: {
         'values.from': function(newVal) {
-            this.values.raw.from = newVal;
+            this.values.raw.from = parseFloat(newVal);
 
             // Convert from value to NEAR
             const [converted, precision] = convertNear({
-                value: newVal,
+                value: this.values.raw.from,
                 from: this.selection.from,
                 to: this.selection.to
             });
@@ -75,14 +75,12 @@ export default Vue.extend({
             this.values.raw.to = converted;
 
             // do not look at this code pls
-            const fixed = converted['toFixed'] ? converted.toFixed(precision) : `${converted}`;
-            const [firstHalf, secondHalf] = fixed.split('.', 2);
-            if (firstHalf.includes('e')) {
-                this.values.to = converted.toLocaleString('fullwide', { useGrouping: false });
-            } else if (!!secondHalf && Array.from(secondHalf).every(c => c === '0')) {
-                this.values.to = fixed.substring(0, fixed.indexOf('.'));
+            const hasDecimal = (converted % 1) !== 0;
+            if (hasDecimal) {
+                const fractionDigits = newVal.indexOf('.') !== -1 ? newVal.split('.', 2)[1].length : precision;
+                this.values.to = converted.toFixed(Math.max(fractionDigits, precision));
             } else {
-                this.values.to = fixed;
+                this.values.to = BigInt(converted).toString();
             }
         },
         'values.to': function(newVal, oldVal) {
