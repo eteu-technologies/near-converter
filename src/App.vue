@@ -8,18 +8,17 @@
     </b-container>
 </template>
 
-<script>
-import Converter from '@/components/Converter';
+<script lang="ts">
+import { Component } from 'vue-property-decorator';
+import Converter from '@/components/Converter.vue';
+import Vue from 'vue';
 
-export default {
-    name: 'App',
+@Component({
     components: {
         Converter
     },
-    data: () => {
-        return {};
-    }
-};
+})
+export default class App extends Vue {}
 </script>
 
 <style lang="scss">

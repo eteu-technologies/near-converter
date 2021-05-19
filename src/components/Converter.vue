@@ -29,10 +29,11 @@
 </template>
 
 <script>
+import Vue from 'vue';
 import { units, convertNear } from '@/utils/near';
 // import BN from 'bn.js';
 
-export default {
+export default Vue.extend({
     name: 'Converter',
     data: () => {
         return {
@@ -100,7 +101,7 @@ export default {
             }
         }
     }
-};
+});
 </script>
 
 <style scoped>
