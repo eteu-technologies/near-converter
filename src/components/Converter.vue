@@ -1,7 +1,6 @@
 <template>
     <b-card id="converter" header="Convert">
-        <pre>{{ values }} {{ selection }}</pre>
-        <b-form-group label="From:" :description="`Converting from ${values.from}`">
+        <b-form-group label="From:" :description="readableFrom">
             <b-input-group>
                 <b-form-input type="number" v-model="values.from"></b-form-input>
                 <template #append>
@@ -13,7 +12,7 @@
                 </template>
             </b-input-group>
         </b-form-group>
-        <b-form-group label="To:" :description="`Converted to ${values.to}`">
+        <b-form-group label="To:" :description="readableTo">
             <b-input-group>
                 <b-form-input type="number" v-model="values.to"></b-form-input>
                 <template #append>
@@ -69,50 +68,34 @@ export default class Converter extends mixins(WithoutWatchers) {
         return units;
     }
 
+    get readableFrom() {
+        const value = this.values.from ?? 0;
+        return `Converting from ${value} ${this.selection.from}`;
+    }
+
+    get readableTo() {
+        const value = this.values.to ?? 0;
+        return `Converted to ${value} ${this.selection.to}`;
+    }
+
     @Watch('values.from')
-    fromChanged(newVal: string) {
-        if (this.selection.from === this.selection.to) {
-            this.values.to = this.values.raw.from = this.values.raw.to = newVal;
-            return;
-        }
-        this.values.raw.from = parseFloat(newVal) || 0.0;
-
-        // Convert from value to NEAR
-        const [converted, precision] = convertNear({
-            value: this.values.raw.from,
-            from: this.selection.from,
-            to: this.selection.to
-        });
-        this.values.raw.to = converted;
-
-        // Don't trigger 'values.to' watcher
-        this.withoutWatchers(() => {
-            // Convert raw value to human readable string
-            this.values.to = readable(converted, precision);
-        });
+    fromChanged(value: string) {
+        this.convert('from', value);
     }
 
     @Watch('values.to')
     toChanged(newVal: string) {
-        if (this.selection.to === this.selection.from) {
-            this.values.from = this.values.raw.to = this.values.raw.from = newVal;
-            return;
-        }
-        this.values.raw.to = parseFloat(newVal) || 0.0;
+        this.convert('to', newVal);
+    }
 
-        // Convert from value to NEAR
-        const [converted, precision] = convertNear({
-            value: this.values.raw.to,
-            from: this.selection.to,
-            to: this.selection.from
-        });
-        this.values.raw.from = converted;
+    @Watch('selection.from')
+    selectionFromChanged() {
+        this.convert('from', this.values.from);
+    }
 
-        // Don't trigger 'values.to' watcher
-        this.withoutWatchers(() => {
-            // Convert raw value to human readable string
-            this.values.from = readable(converted, precision);
-        });
+    @Watch('selection.to')
+    selectionToChanged() {
+        this.convert('to', this.values.to);
     }
 
     select(type: string, unit: string) {
@@ -121,6 +104,29 @@ export default class Converter extends mixins(WithoutWatchers) {
         } else {
             this.selection.to = unit;
         }
+    }
+
+    convert(source: string, value: string) {
+        const destination = source === 'from' ? 'to' : 'from';
+        if (this.selection.from === this.selection.to) {
+            this.values[destination] = this.values.raw[source] = this.values.raw[destination] = value;
+            return;
+        }
+        this.values.raw[source] = parseFloat(value) || 0.0;
+
+        // Convert from value to NEAR
+        const [converted, precision] = convertNear({
+            value: this.values.raw[source],
+            from: this.selection[source],
+            to: this.selection[destination]
+        });
+        this.values.raw[destination] = converted;
+
+        // Don't trigger watchers
+        this.withoutWatchers(() => {
+            // Convert raw value to human readable string
+            this.values[destination] = readable(converted, precision);
+        });
     }
 }
 </script>
