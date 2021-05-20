@@ -70,11 +70,6 @@ export default Vue.extend({
             }
         };
     },
-    filters: {
-        toFixed(value: number) {
-            return value.toFixed(24);
-        }
-    },
     computed: {
         units: () => {
             return units;
