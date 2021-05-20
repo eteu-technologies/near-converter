@@ -1,10 +1,9 @@
-/* eslint-disable */
-// this._watchers = undefined;
 import Vue from 'vue';
 import Component from 'vue-class-component';
 
 @Component
 export class WithoutWatchers extends Vue {
+
     private _watchers: any;
 
     withoutWatchers(cb: () => void) {
