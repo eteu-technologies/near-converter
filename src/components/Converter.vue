@@ -29,13 +29,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue';
+import { Watch } from 'vue-property-decorator';
+import { WithoutWatchers } from '@/mixins/watcher';
+import Component, { mixins } from 'vue-class-component';
 import { units, convertNear, readable } from '@/utils/near';
-
-interface ConverterState {
-    values: ConverterValues;
-    selection: ConverterSelection;
-}
 
 interface ConverterValues {
     from: string | null;
@@ -51,65 +48,81 @@ interface ConverterSelection {
     to: string;
 }
 
-export default Vue.extend({
-    name: 'Converter',
-    data: (): ConverterState => {
-        return {
-            values: {
-                from: null,
-                to: null,
-                raw: {
-                    from: null,
-                    to: null,
-                }
-            },
-            selection: {
-                from: 'NEAR',
-                to: 'yoctoNEAR'
-            }
-        };
-    },
-    computed: {
-        units: () => {
-            return units;
-        }
-    },
-    watch: {
-        'values.from': function(newVal: string) {
-            if (this.selection.from === this.selection.to) {
-                this.values.to = this.values.raw.from = this.values.raw.to = newVal;
-                return;
-            }
-            this.values.raw.from = parseFloat(newVal) || 0.0;
+@Component
+export default class Converter extends mixins(WithoutWatchers) {
 
-            // Convert from value to NEAR
-            const [converted, precision] = convertNear({
-                value: this.values.raw.from,
-                from: this.selection.from,
-                to: this.selection.to
-            });
-
-            this.values.raw.to = converted;
-            // Convert raw value to human readable string
-            this.values.to = readable(converted, precision);
-        },
-        'values.to': function(newVal: string | null, oldVal: string | null) {
-            console.debug('changed from %s to %s', oldVal, newVal);
-        }
-    },
-    created() {
-        // console.log(u);
-    },
-    methods: {
-        select(type: string, unit: string) {
-            if (type === 'from') {
-                this.selection.from = unit;
-            } else {
-                this.selection.to = unit;
-            }
+    values: ConverterValues = {
+        from: null,
+        to: null,
+        raw: {
+            from: null,
+            to: null,
         }
     }
-});
+
+    selection: ConverterSelection = {
+        from: 'NEAR',
+        to: 'yoctoNEAR'
+    }
+
+    get units() {
+        return units;
+    }
+
+    @Watch('values.from')
+    fromChanged(newVal: string) {
+        if (this.selection.from === this.selection.to) {
+            this.values.to = this.values.raw.from = this.values.raw.to = newVal;
+            return;
+        }
+        this.values.raw.from = parseFloat(newVal) || 0.0;
+
+        // Convert from value to NEAR
+        const [converted, precision] = convertNear({
+            value: this.values.raw.from,
+            from: this.selection.from,
+            to: this.selection.to
+        });
+        this.values.raw.to = converted;
+
+        // Don't trigger 'values.to' watcher
+        this.withoutWatchers(() => {
+            // Convert raw value to human readable string
+            this.values.to = readable(converted, precision);
+        });
+    }
+
+    @Watch('values.to')
+    toChanged(newVal: string) {
+        if (this.selection.to === this.selection.from) {
+            this.values.from = this.values.raw.to = this.values.raw.from = newVal;
+            return;
+        }
+        this.values.raw.to = parseFloat(newVal) || 0.0;
+
+        // Convert from value to NEAR
+        const [converted, precision] = convertNear({
+            value: this.values.raw.to,
+            from: this.selection.to,
+            to: this.selection.from
+        });
+        this.values.raw.from = converted;
+
+        // Don't trigger 'values.to' watcher
+        this.withoutWatchers(() => {
+            // Convert raw value to human readable string
+            this.values.from = readable(converted, precision);
+        });
+    }
+
+    select(type: string, unit: string) {
+        if (type === 'from') {
+            this.selection.from = unit;
+        } else {
+            this.selection.to = unit;
+        }
+    }
+}
 </script>
 
 <style scoped>
