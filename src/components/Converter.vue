@@ -28,14 +28,33 @@
     </b-card>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from 'vue';
 import { units, convertNear } from '@/utils/near';
 // import BN from 'bn.js';
 
+interface ConverterState {
+    values: ConverterValues;
+    selection: ConverterSelection;
+}
+
+interface ConverterValues {
+    from: string | null;
+    to: string | null;
+    raw: {
+        from: number | string | null;
+        to: number | string | null;
+    };
+}
+
+interface ConverterSelection {
+    from: string;
+    to: string;
+}
+
 export default Vue.extend({
     name: 'Converter',
-    data: () => {
+    data: (): ConverterState => {
         return {
             values: {
                 from: null,
@@ -52,7 +71,7 @@ export default Vue.extend({
         };
     },
     filters: {
-        toFixed(value) {
+        toFixed(value: number) {
             return value.toFixed(24);
         }
     },
@@ -62,7 +81,7 @@ export default Vue.extend({
         }
     },
     watch: {
-        'values.from': function(newVal) {
+        'values.from': function(newVal: string) {
             if (this.selection.from === this.selection.to) {
                 this.values.to = this.values.raw.from = this.values.raw.to = newVal;
                 return;
@@ -86,7 +105,7 @@ export default Vue.extend({
                 this.values.to = BigInt(converted).toString();
             }
         },
-        'values.to': function(newVal, oldVal) {
+        'values.to': function(newVal: string | null, oldVal: string | null) {
             console.debug('changed from %s to %s', oldVal, newVal);
         }
     },
@@ -94,7 +113,7 @@ export default Vue.extend({
         // console.log(u);
     },
     methods: {
-        select(type, unit) {
+        select(type: string, unit: string) {
             if (type === 'from') {
                 this.selection.from = unit;
             } else {
