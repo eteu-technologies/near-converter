@@ -30,8 +30,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { units, convertNear } from '@/utils/near';
-// import BN from 'bn.js';
+import { units, convertNear, readable } from '@/utils/near';
 
 interface ConverterState {
     values: ConverterValues;
@@ -91,14 +90,8 @@ export default Vue.extend({
             });
 
             this.values.raw.to = converted;
-
-            // do not look at this code pls
-            const hasDecimal = (converted % 1) !== 0;
-            if (hasDecimal) {
-                this.values.to = converted.toFixed(precision);
-            } else {
-                this.values.to = BigInt(converted).toString();
-            }
+            // Convert raw value to human readable string
+            this.values.to = readable(converted, precision);
         },
         'values.to': function(newVal: string | null, oldVal: string | null) {
             console.debug('changed from %s to %s', oldVal, newVal);

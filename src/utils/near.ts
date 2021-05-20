@@ -4,9 +4,9 @@ export const units = [
     'NEAR',
     'milliNEAR',
     'yoctoNEAR',
-    'TGas',
-    'GGas',
-    'Gas'
+    // 'TGas',
+    // 'GGas',
+    // 'Gas'
 ];
 
 // 1 ... = x NEAR
@@ -43,4 +43,17 @@ export const convertNear = ({ value, from, to }: { value: number; from: string; 
     const converted = toXFromNear[to](normalized);
 
     return [ converted, precision ];
+};
+
+export const scientificToString = (value: number): string => {
+    return (''+value).replace(/(-?)(\d*)\.?(\d+)e([+-]\d+)/, function(a, b, c, d, e) {
+        return e < 0
+            ? b + '0.' + Array(1-e-c.length).join('0') + c + d
+            : b + c + d + Array(e-d.length+1).join('0');
+    });
+};
+
+export const readable = (value: number, precision: number): string => {
+    const hasDecimal = (value % 1) !== 0;
+    return hasDecimal ? value.toFixed(precision) : scientificToString(value);
 };
