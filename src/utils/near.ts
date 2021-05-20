@@ -10,6 +10,7 @@ export const units = [
 ];
 
 // 1 ... = x NEAR
+// eslint-disable-next-line no-unused-vars
 const toNearFromX: {[key: string]: (_: number) => number} = {
     'NEAR': (f: number) => f, // no-op
     'milliNEAR': (f: number) => f * 0.0001,
@@ -23,6 +24,7 @@ const precisionTable: {[key: string]: number} = {
 };
 
 // X amount of Y in 1 NEAR
+// eslint-disable-next-line no-unused-vars
 const toXFromNear: {[key: string]: (_: number) => number} = {
     /* Y: X */
     'NEAR': (f: number) => f,
