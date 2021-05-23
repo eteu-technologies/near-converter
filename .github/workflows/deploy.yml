@@ -22,6 +22,8 @@ jobs:
         run: yarn
       - name: Build the project
         run: yarn build
+      - name: Add CNAME
+        run: echo 'convert.eteu.dev' >> ./dist/CNAME
       - name: Deploy site to Github Pages
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/master'
