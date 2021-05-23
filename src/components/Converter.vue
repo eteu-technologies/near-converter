@@ -1,10 +1,13 @@
 <template>
-    <b-card id="converter" header="Convert">
+    <b-card id="converter" header="NEAR Unit Converter">
         <b-form-group label="From:" :description="readableFrom">
             <b-input-group>
-                <b-form-input type="number" v-model="values.from"></b-form-input>
+                <b-form-input type="number" id="from-input" v-model="values.from"></b-form-input>
+                <template #prepend v-if="canCopy">
+                    <b-button v-b-tooltip.click.left title="Copied to clipboard!" @click="copy('from')" variant="secondary"><i class="fas fa-clipboard"></i></b-button>
+                </template>
                 <template #append>
-                    <b-dropdown :text="selection.from">
+                    <b-dropdown :text="selection.from" variant="primary">
                         <template v-for="unit in units">
                             <b-dropdown-item @click="select('from', unit)" v-if="unit !== selection.from" :key="unit">{{ unit }}</b-dropdown-item>
                         </template>
@@ -14,9 +17,12 @@
         </b-form-group>
         <b-form-group label="To:" :description="readableTo">
             <b-input-group>
-                <b-form-input type="number" v-model="values.to"></b-form-input>
+                <b-form-input type="number" id="to-input" v-model="values.to"></b-form-input>
+                <template #prepend v-if="canCopy">
+                    <b-button v-b-tooltip.click.left title="Copied to clipboard!" @click="copy('to')" variant="secondary"><i class="fas fa-clipboard"></i></b-button>
+                </template>
                 <template #append>
-                    <b-dropdown :text="selection.to">
+                    <b-dropdown :text="selection.to" variant="primary">
                         <template v-for="unit in units">
                             <b-dropdown-item @click="select('to', unit)" v-if="unit !== selection.to" :key="unit">{{ unit }}</b-dropdown-item>
                         </template>
@@ -32,6 +38,7 @@ import { Watch } from 'vue-property-decorator';
 import { WithoutWatchers } from '@/mixins/watcher';
 import Component, { mixins } from 'vue-class-component';
 import { units, convertNear, readable } from '@/utils/near';
+import {BvEvent} from 'bootstrap-vue';
 
 interface ConverterValuesRaw {
     [index: string]: number | string | null
@@ -40,10 +47,9 @@ interface ConverterValuesRaw {
 }
 
 interface ConverterValues {
-    [index: string]: string | ConverterValuesRaw | null
+    [index: string]: string | null
     from: string | null;
     to: string | null;
-    raw: ConverterValuesRaw;
 }
 
 interface ConverterSelection {
@@ -58,10 +64,11 @@ export default class Converter extends mixins(WithoutWatchers) {
     values: ConverterValues = {
         from: null,
         to: null,
-        raw: {
-            from: null,
-            to: null,
-        }
+    }
+
+    raw: ConverterValuesRaw = {
+        from: null,
+        to: null
     }
 
     selection: ConverterSelection = {
@@ -73,6 +80,10 @@ export default class Converter extends mixins(WithoutWatchers) {
         return units;
     }
 
+    get canCopy() {
+        return !!navigator.clipboard;
+    }
+
     get readableFrom() {
         const value = this.values.from ?? 0;
         return `Converting from ${value} ${this.selection.from}`;
@@ -81,6 +92,14 @@ export default class Converter extends mixins(WithoutWatchers) {
     get readableTo() {
         const value = this.values.to ?? 0;
         return `Converted to ${value} ${this.selection.to}`;
+    }
+
+    created() {
+        this.$root.$on('bv::tooltip::shown', (e: BvEvent) => {
+            setTimeout(() => {
+                this.$root.$emit('bv::hide::tooltip', e.componentId);
+            }, 2000);
+        });
     }
 
     @Watch('values.from')
@@ -118,18 +137,18 @@ export default class Converter extends mixins(WithoutWatchers) {
     convert(source: string, value: string) {
         const destination = source === 'from' ? 'to' : 'from';
         if (this.selection.from === this.selection.to) {
-            this.values[destination] = this.values.raw[source] = this.values.raw[destination] = value;
+            this.values[destination] = this.raw[source] = this.raw[destination] = value;
             return;
         }
         const parsedValue = parseFloat(value) || 0.0;
-        this.values.raw[source] = parsedValue;
+        this.raw[source] = parsedValue;
 
         const [converted, precision] = convertNear({
             value: parsedValue,
             from: this.selection[source],
             to: this.selection[destination]
         });
-        this.values.raw[destination] = converted;
+        this.raw[destination] = converted;
 
         // Don't trigger watchers
         this.withoutWatchers(() => {
@@ -137,12 +156,17 @@ export default class Converter extends mixins(WithoutWatchers) {
             this.values[destination] = readable(converted, precision);
         });
     }
+
+    async copy(target: string) {
+        const value = this.values[target];
+        if (!value || !this.canCopy) {
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(value);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 }
 </script>
-
-<style scoped>
-#converter {
-    min-width: 450px;
-    max-width: 450px
-}
-</style>
