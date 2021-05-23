@@ -21,3 +21,10 @@
     z-index: initial;
   }
 }
+
+@include media-breakpoint-down(md) {
+  #converter  {
+    min-width: initial;
+    max-width: initial;
+  }
+}
