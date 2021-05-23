@@ -4,7 +4,7 @@
             <b-input-group>
                 <b-form-input type="number" id="from-input" v-model="values.from"></b-form-input>
                 <template #prepend v-if="canCopy">
-                    <b-button v-b-tooltip.click.left title="Copied to clipboard!" @click="copy('from')" variant="secondary"><i class="fas fa-clipboard"></i></b-button>
+                    <b-button v-b-tooltip.click.left title="Copied to clipboard!" @click="copy('from')" variant="secondary"><div class="icon-clipboard"></div></b-button>
                 </template>
                 <template #append>
                     <b-dropdown :text="selection.from" variant="primary">
@@ -19,7 +19,7 @@
             <b-input-group>
                 <b-form-input type="number" id="to-input" v-model="values.to"></b-form-input>
                 <template #prepend v-if="canCopy">
-                    <b-button v-b-tooltip.click.left title="Copied to clipboard!" @click="copy('to')" variant="secondary"><i class="fas fa-clipboard"></i></b-button>
+                    <b-button v-b-tooltip.click.left title="Copied to clipboard!" @click="copy('to')" variant="secondary"><div class="icon-clipboard"></div></b-button>
                 </template>
                 <template #append>
                     <b-dropdown :text="selection.to" variant="primary">
