@@ -33,16 +33,21 @@ import { WithoutWatchers } from '@/mixins/watcher';
 import Component, { mixins } from 'vue-class-component';
 import { units, convertNear, readable } from '@/utils/near';
 
+interface ConverterValuesRaw {
+    [index: string]: number | string | null
+    from: number | string | null;
+    to: number | string | null;
+}
+
 interface ConverterValues {
+    [index: string]: string | ConverterValuesRaw | null
     from: string | null;
     to: string | null;
-    raw: {
-        from: number | string | null;
-        to: number | string | null;
-    };
+    raw: ConverterValuesRaw;
 }
 
 interface ConverterSelection {
+    [index: string]: string
     from: string;
     to: string;
 }
@@ -90,12 +95,16 @@ export default class Converter extends mixins(WithoutWatchers) {
 
     @Watch('selection.from')
     selectionFromChanged() {
-        this.convert('from', this.values.from);
+        if (this.values.from) {
+            this.convert('from', this.values.from);
+        }
     }
 
     @Watch('selection.to')
     selectionToChanged() {
-        this.convert('to', this.values.to);
+        if (this.values.to) {
+            this.convert('to', this.values.to);
+        }
     }
 
     select(type: string, unit: string) {
@@ -112,11 +121,11 @@ export default class Converter extends mixins(WithoutWatchers) {
             this.values[destination] = this.values.raw[source] = this.values.raw[destination] = value;
             return;
         }
-        this.values.raw[source] = parseFloat(value) || 0.0;
+        const parsedValue = parseFloat(value) || 0.0;
+        this.values.raw[source] = parsedValue;
 
-        // Convert from value to NEAR
         const [converted, precision] = convertNear({
-            value: this.values.raw[source],
+            value: parsedValue,
             from: this.selection[source],
             to: this.selection[destination]
         });
