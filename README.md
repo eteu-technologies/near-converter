@@ -5,6 +5,8 @@ Or big numbers making you trouble in general?
 
 Here's our small utility to aid with this problem - if you can use online percentage calculators, then this site shouldn't be any harder to use.
 
+Live version: https://convert.eteu.dev
+
 ## Building etc.
 
 ```shell
