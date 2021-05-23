@@ -1,6 +1,6 @@
 # NEAR Unit Converter
 
-_...to be added_
+_...to be added..._
 
 ```shell
 # Project setup
