@@ -1,24 +1,17 @@
-# near-converter
+# NEAR Unit Converter
 
-## Project setup
-```
+_...to be added_
+
+```shell
+# Project setup
 yarn install
-```
 
-### Compiles and hot-reloads for development
-```
+# Development build with HMR
 yarn serve
-```
 
-### Compiles and minifies for production
-```
+# Production build
 yarn build
-```
 
-### Lints and fixes files
-```
+# Lint
 yarn lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
