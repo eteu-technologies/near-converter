@@ -18,7 +18,16 @@ import Vue from 'vue';
         Converter
     },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+
+    created() {
+        import('../wasm/pkg').then(wasm => {
+            wasm.init();
+            wasm.greet();
+        });
+    }
+
+}
 </script>
 
 <style lang="scss">

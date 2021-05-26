@@ -1,5 +1,5 @@
 [package]
-name = "wasm"
+name = "near-calculator-wasm"
 version = "0.1.0"
 authors = ["Markkus Millend <markkusmillend@icloud.com>"]
 edition = "2018"
