@@ -4,7 +4,7 @@ export const units = [
     'NEAR',
     'milliNEAR',
     'yoctoNEAR',
-    // 'TGas',
+    'TGas', // Currently 1 TGas = 100 million yoctoNEAR. Subject to change in the future.
     // 'GGas',
     // 'Gas'
 ];
@@ -14,13 +14,15 @@ export const units = [
 const toNearFromX: {[key: string]: (_: number) => number} = {
     'NEAR': (f: number) => f, // no-op
     'milliNEAR': (f: number) => f * 0.0001,
-    'yoctoNEAR': (f: number) => f * Math.pow(10, -24)
+    'yoctoNEAR': (f: number) => f * Math.pow(10, -24),
+    'TGas': (f: number) => f * Math.pow(10, -5)
 };
 
 const precisionTable: {[key: string]: number} = {
     'NEAR': 0,
     'milliNEAR': 4,
     'yoctoNEAR': 24,
+    'TGas': 0
 };
 
 // X amount of Y in 1 NEAR
@@ -29,7 +31,8 @@ const toXFromNear: {[key: string]: (_: number) => number} = {
     /* Y: X */
     'NEAR': (f: number) => f,
     'milliNEAR': (f: number) => f * 10000,
-    'yoctoNEAR': (f: number) => f * Math.pow(10, 24)
+    'yoctoNEAR': (f: number) => f * Math.pow(10, 24),
+    'TGas': (f: number) => f * Math.pow(10, 5)
 };
 
 export const convertNear = ({ value, from, to }: { value: number; from: string; to: string }): [ number, number ] => {
