@@ -13,14 +13,14 @@ export const units = [
 // eslint-disable-next-line no-unused-vars
 const toNearFromX: {[key: string]: (_: number) => number} = {
     'NEAR': (f: number) => f, // no-op
-    'milliNEAR': (f: number) => f * 0.0001,
+    'milliNEAR': (f: number) => f * 0.001,
     'yoctoNEAR': (f: number) => f * Math.pow(10, -24),
     'TGas': (f: number) => f * Math.pow(10, -5)
 };
 
 const precisionTable: {[key: string]: number} = {
     'NEAR': 0,
-    'milliNEAR': 4,
+    'milliNEAR': 3,
     'yoctoNEAR': 24,
     'TGas': 0
 };
@@ -30,7 +30,7 @@ const precisionTable: {[key: string]: number} = {
 const toXFromNear: {[key: string]: (_: number) => number} = {
     /* Y: X */
     'NEAR': (f: number) => f,
-    'milliNEAR': (f: number) => f * 10000,
+    'milliNEAR': (f: number) => f * 1000,
     'yoctoNEAR': (f: number) => f * Math.pow(10, 24),
     'TGas': (f: number) => f * Math.pow(10, 5)
 };
